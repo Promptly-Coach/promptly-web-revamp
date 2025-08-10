@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Brain, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// import removed: using uploaded image URL directly
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,15 +26,9 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="h-10 w-10 rounded-full bg-accent/10 p-1 flex items-center justify-center shadow-glow">
-              <img
-                src="/lovable-uploads/df5f4796-f853-4b41-bfce-1b4392cc735b.png"
-                alt="PromptlyCoach logo"
-                className="h-8 w-8 rounded-full object-cover"
-                width={32}
-                height={32}
-                loading="eager"
-              />
+            <div className="relative">
+              <Brain className="h-8 w-8 text-accent animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping"></div>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-primary font-heading">PromptlyCoach</span>
