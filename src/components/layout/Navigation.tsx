@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import logoCircle from '@/assets/logo-circle.png';
+// import removed: using uploaded image URL directly
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,14 +27,16 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img
-              src={logoCircle}
-              alt="PromptlyCoach circular logo"
-              className="h-9 w-9 rounded-full shadow-glow"
-              width={36}
-              height={36}
-              loading="eager"
-            />
+            <div className="h-10 w-10 rounded-full bg-accent/10 p-1 flex items-center justify-center shadow-glow">
+              <img
+                src="/lovable-uploads/df5f4796-f853-4b41-bfce-1b4392cc735b.png"
+                alt="PromptlyCoach logo"
+                className="h-8 w-8 rounded-full object-cover"
+                width={32}
+                height={32}
+                loading="eager"
+              />
+            </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-primary font-heading">PromptlyCoach</span>
               <span className="text-xs text-muted-foreground -mt-1">AI Training Experts</span>
