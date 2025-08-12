@@ -148,17 +148,42 @@ export const useChat = () => {
       if (error) {
         console.error('Error getting AI response:', error);
         // Send a fallback message
-        await supabase
+        const { data: fallbackData, error: fallbackError } = await supabase
           .from('chat_messages')
           .insert({
             session_id: currentSession!.id,
             message: "I apologize, but I'm having trouble responding right now. Please try again or contact our support team directly.",
             sender_type: 'bot',
             sender_name: 'PromptlyCoach AI',
-          });
+          })
+          .select()
+          .single();
+
+        if (!fallbackError) {
+          setMessages(prev => [...prev, fallbackData]);
+        }
+      } else if (data?.response) {
+        // AI response received successfully - it's already stored by the edge function
+        // The real-time subscription will pick it up automatically
+        console.log('AI response received:', data.response);
       }
     } catch (error) {
       console.error('Error in getAIResponse:', error);
+      // Send a fallback message
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('chat_messages')
+        .insert({
+          session_id: currentSession!.id,
+          message: "I apologize, but I'm having trouble responding right now. Please try again or contact our support team directly.",
+          sender_type: 'bot',
+          sender_name: 'PromptlyCoach AI',
+        })
+        .select()
+        .single();
+
+      if (!fallbackError) {
+        setMessages(prev => [...prev, fallbackData]);
+      }
     }
   };
 
