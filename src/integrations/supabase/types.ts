@@ -14,7 +14,357 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender_name: string | null
+          sender_type: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender_name?: string | null
+          sender_type: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender_name?: string | null
+          sender_type?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_sessions: {
+        Row: {
+          contact_id: string | null
+          ended_at: string | null
+          id: string
+          session_id: string | null
+          started_at: string
+          status: string | null
+          user_agent: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          ended_at?: string | null
+          id?: string
+          session_id?: string | null
+          started_at?: string
+          status?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          ended_at?: string | null
+          id?: string
+          session_id?: string | null
+          started_at?: string
+          status?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultations: {
+        Row: {
+          consultation_type: string | null
+          contact_id: string | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          meeting_link: string | null
+          notes: string | null
+          scheduled_date: string | null
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          consultation_type?: string | null
+          contact_id?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          consultation_type?: string | null
+          contact_id?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          budget_range: string | null
+          company: string | null
+          company_size: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          message: string | null
+          phone: string | null
+          project_timeline: string | null
+          service_interest: string | null
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          company?: string | null
+          company_size?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          project_timeline?: string | null
+          service_interest?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          company?: string | null
+          company_size?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          project_timeline?: string | null
+          service_interest?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      email_logs: {
+        Row: {
+          contact_id: string | null
+          content: string | null
+          created_at: string
+          email_from: string
+          email_to: string
+          email_type: string | null
+          id: string
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          content?: string | null
+          created_at?: string
+          email_from: string
+          email_to: string
+          email_type?: string | null
+          id?: string
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          content?: string | null
+          created_at?: string
+          email_from?: string
+          email_to?: string
+          email_type?: string | null
+          id?: string
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phone_calls: {
+        Row: {
+          call_type: string | null
+          contact_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          notes: string | null
+          phone_number: string
+          status: string | null
+        }
+        Insert: {
+          call_type?: string | null
+          contact_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+          phone_number: string
+          status?: string | null
+        }
+        Update: {
+          call_type?: string | null
+          contact_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+          phone_number?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_calls_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          company_name: string | null
+          company_size: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          job_title: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          company_size?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          company_size?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      service_requests: {
+        Row: {
+          contact_id: string
+          created_at: string
+          custom_requirements: string | null
+          estimated_budget: number | null
+          id: string
+          priority: string | null
+          quote_amount: number | null
+          quote_notes: string | null
+          service_type: string
+          status: string | null
+          timeline_requirement: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          custom_requirements?: string | null
+          estimated_budget?: number | null
+          id?: string
+          priority?: string | null
+          quote_amount?: number | null
+          quote_notes?: string | null
+          service_type: string
+          status?: string | null
+          timeline_requirement?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          custom_requirements?: string | null
+          estimated_budget?: number | null
+          id?: string
+          priority?: string | null
+          quote_amount?: number | null
+          quote_notes?: string | null
+          service_type?: string
+          status?: string | null
+          timeline_requirement?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
