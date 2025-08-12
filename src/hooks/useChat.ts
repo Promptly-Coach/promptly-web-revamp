@@ -51,9 +51,9 @@ export const useChat = () => {
       
       // Send welcome message
       await sendMessage(
-        'Hello! Welcome to PromptlyCoach. How can we help you today?',
+        'Hello! Welcome to PromptlyCoach. I\'m your AI assistant and I\'m here to help answer any questions about our AI consulting and automation services. How can I assist you today?',
         'bot',
-        'AI Assistant'
+        'PromptlyCoach AI'
       );
 
       toast({
@@ -85,6 +85,7 @@ export const useChat = () => {
     }
 
     try {
+      // Store user message
       const { data, error } = await supabase
         .from('chat_messages')
         .insert({
@@ -99,6 +100,12 @@ export const useChat = () => {
       if (error) throw error;
 
       setMessages(prev => [...prev, data]);
+
+      // If this is a visitor message, get AI response
+      if (senderType === 'visitor') {
+        await getAIResponse(message);
+      }
+
       return { success: true, message: data };
     } catch (error) {
       console.error('Error sending message:', error);
@@ -108,6 +115,39 @@ export const useChat = () => {
         variant: "destructive",
       });
       return { success: false, error };
+    }
+  };
+
+  const getAIResponse = async (userMessage: string) => {
+    try {
+      // Prepare chat history for context
+      const chatHistory = messages.map(msg => ({
+        role: msg.sender_type === 'visitor' ? 'user' : 'assistant',
+        content: msg.message
+      }));
+
+      const { data, error } = await supabase.functions.invoke('ai-chat', {
+        body: {
+          message: userMessage,
+          sessionId: currentSession?.id,
+          chatHistory: chatHistory
+        }
+      });
+
+      if (error) {
+        console.error('Error getting AI response:', error);
+        // Send a fallback message
+        await supabase
+          .from('chat_messages')
+          .insert({
+            session_id: currentSession!.id,
+            message: "I apologize, but I'm having trouble responding right now. Please try again or contact our support team directly.",
+            sender_type: 'bot',
+            sender_name: 'PromptlyCoach AI',
+          });
+      }
+    } catch (error) {
+      console.error('Error in getAIResponse:', error);
     }
   };
 
@@ -190,5 +230,6 @@ export const useChat = () => {
     startChatSession,
     sendMessage,
     endChatSession,
+    getAIResponse,
   };
 };
