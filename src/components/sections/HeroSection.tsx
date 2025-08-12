@@ -3,13 +3,24 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, CheckCircle, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroImage from '@/assets/hero-image.jpg';
+import { useContact } from '@/hooks/useContact';
 
 const HeroSection = () => {
+  const { scheduleConsultation } = useContact();
+  
   const features = [
     "Personalized AI guidance",
     "Proven business results", 
     "Expert-led training"
   ];
+
+  const handleBookDemo = async () => {
+    const result = await scheduleConsultation('free_demo');
+    if (result.requiresAuth) {
+      // Redirect to auth page if needed
+      window.location.href = '/auth';
+    }
+  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/30">
@@ -52,11 +63,9 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button variant="hero" size="xl" asChild className="group">
-                <Link to="/contact">
-                  Book Your Free Demo Today
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+              <Button variant="hero" size="xl" onClick={handleBookDemo} className="group">
+                Book Your Free Demo Today
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button variant="outline" size="xl" asChild className="group">
                 <Link to="/how-it-works">

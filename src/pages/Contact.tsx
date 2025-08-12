@@ -17,46 +17,48 @@ import {
   Users,
   Zap
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useContact } from '@/hooks/useContact';
 
 const Contact = () => {
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
-    company: '',
     phone: '',
-    employees: '',
-    service: '',
-    budget: '',
+    company: '',
+    companySize: '',
+    serviceInterest: '',
+    budgetRange: '',
+    projectTimeline: '',
     message: '',
-    urgency: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { submitContact, isSubmitting } = useContact();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    toast({
-      title: "Message Sent Successfully!",
-      description: "We'll get back to you within 24 hours.",
-    });
+    const result = await submitContact(formData);
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      phone: '',
-      employees: '',
-      service: '',
-      budget: '',
-      message: '',
-      urgency: ''
-    });
+    if (result.success) {
+      // Reset form
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        company: '',
+        companySize: '',
+        serviceInterest: '',
+        budgetRange: '',
+        projectTimeline: '',
+        message: '',
+      });
+    }
   };
 
-  const handleChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const benefits = [
@@ -117,11 +119,12 @@ const Contact = () => {
                     {/* Personal Info */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name *</Label>
+                        <Label htmlFor="fullName">Full Name *</Label>
                         <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => handleChange('name', e.target.value)}
+                          id="fullName"
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleChange}
                           placeholder="John Smith"
                           required
                         />
@@ -130,9 +133,10 @@ const Contact = () => {
                         <Label htmlFor="email">Email Address *</Label>
                         <Input
                           id="email"
+                          name="email"
                           type="email"
                           value={formData.email}
-                          onChange={(e) => handleChange('email', e.target.value)}
+                          onChange={handleChange}
                           placeholder="john@company.com"
                           required
                         />
@@ -145,8 +149,9 @@ const Contact = () => {
                         <Label htmlFor="company">Company Name</Label>
                         <Input
                           id="company"
+                          name="company"
                           value={formData.company}
-                          onChange={(e) => handleChange('company', e.target.value)}
+                          onChange={handleChange}
                           placeholder="Your Company Inc."
                         />
                       </div>
@@ -154,9 +159,10 @@ const Contact = () => {
                         <Label htmlFor="phone">Phone Number</Label>
                         <Input
                           id="phone"
+                          name="phone"
                           type="tel"
                           value={formData.phone}
-                          onChange={(e) => handleChange('phone', e.target.value)}
+                          onChange={handleChange}
                           placeholder="+1 (555) 123-4567"
                         />
                       </div>
@@ -165,8 +171,8 @@ const Contact = () => {
                     {/* Business Details */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="employees">Company Size</Label>
-                        <Select onValueChange={(value) => handleChange('employees', value)}>
+                        <Label htmlFor="companySize">Company Size</Label>
+                        <Select value={formData.companySize} onValueChange={(value) => setFormData({...formData, companySize: value})}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select team size" />
                           </SelectTrigger>
@@ -180,8 +186,8 @@ const Contact = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="service">Primary Interest</Label>
-                        <Select onValueChange={(value) => handleChange('service', value)}>
+                        <Label htmlFor="serviceInterest">Primary Interest</Label>
+                        <Select value={formData.serviceInterest} onValueChange={(value) => setFormData({...formData, serviceInterest: value})}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a service" />
                           </SelectTrigger>
@@ -201,8 +207,8 @@ const Contact = () => {
                     {/* Budget & Timeline */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="budget">Budget Range</Label>
-                        <Select onValueChange={(value) => handleChange('budget', value)}>
+                        <Label htmlFor="budgetRange">Budget Range</Label>
+                        <Select value={formData.budgetRange} onValueChange={(value) => setFormData({...formData, budgetRange: value})}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select budget range" />
                           </SelectTrigger>
@@ -217,8 +223,8 @@ const Contact = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="urgency">Timeline</Label>
-                        <Select onValueChange={(value) => handleChange('urgency', value)}>
+                        <Label htmlFor="projectTimeline">Timeline</Label>
+                        <Select value={formData.projectTimeline} onValueChange={(value) => setFormData({...formData, projectTimeline: value})}>
                           <SelectTrigger>
                             <SelectValue placeholder="When do you want to start?" />
                           </SelectTrigger>
@@ -238,17 +244,18 @@ const Contact = () => {
                       <Label htmlFor="message">Tell us about your goals</Label>
                       <Textarea
                         id="message"
+                        name="message"
                         value={formData.message}
-                        onChange={(e) => handleChange('message', e.target.value)}
+                        onChange={handleChange}
                         placeholder="Describe your current challenges and what you hope to achieve with AI..."
                         className="min-h-[120px]"
                       />
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" variant="hero" size="lg" className="w-full group">
+                    <Button type="submit" variant="hero" size="lg" className="w-full group" disabled={isSubmitting}>
                       <Send className="h-5 w-5 mr-2" />
-                      Send Message & Book Consultation
+                      {isSubmitting ? 'Sending...' : 'Send Message & Book Consultation'}
                     </Button>
                   </form>
                 </CardContent>

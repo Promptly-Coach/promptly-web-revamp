@@ -1,12 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Brain, ChevronDown } from 'lucide-react';
+import { Menu, X, Brain, ChevronDown, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useContact } from '@/hooks/useContact';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+  const { scheduleConsultation } = useContact();
+
+  useEffect(() => {
+    // Get initial user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const handleBookDemo = async () => {
+    const result = await scheduleConsultation('free_demo');
+    if (result.requiresAuth) {
+      window.location.href = '/auth';
+    }
+  };
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -59,12 +90,26 @@ const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/contact">Get Started</Link>
-            </Button>
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/contact">Book Demo</Link>
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.user_metadata?.full_name || user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button variant="hero" size="sm" onClick={handleBookDemo}>
+                  Book Demo
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,12 +143,26 @@ const Navigation = () => {
                 </Link>
               ))}
               <div className="flex flex-col gap-3 px-4 pt-4 border-t border-border">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/contact" onClick={() => setIsOpen(false)}>Get Started</Link>
-                </Button>
-                <Button variant="hero" size="sm" asChild>
-                  <Link to="/contact" onClick={() => setIsOpen(false)}>Book Demo</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <div className="text-sm text-muted-foreground px-4">
+                      Welcome, {user.user_metadata?.full_name || user.email}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => { handleSignOut(); setIsOpen(false); }}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>Sign In</Link>
+                    </Button>
+                    <Button variant="hero" size="sm" onClick={() => { handleBookDemo(); setIsOpen(false); }}>
+                      Book Demo
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
