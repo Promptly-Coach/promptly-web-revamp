@@ -86,11 +86,11 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    // Store the AI response in the database
+    // Store the AI response in the database using the actual session ID (database ID)
     const { error: insertError } = await supabase
       .from('chat_messages')
       .insert({
-        session_id: sessionId,
+        session_id: sessionId, // This should be the database session ID
         message: aiResponse,
         sender_type: 'bot',
         sender_name: 'PromptlyCoach AI',
@@ -98,6 +98,8 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
 
     if (insertError) {
       console.error('Error storing AI response:', insertError);
+    } else {
+      console.log('AI response stored successfully');
     }
 
     return new Response(

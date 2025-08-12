@@ -140,7 +140,7 @@ export const useChat = () => {
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: {
           message: userMessage,
-          sessionId: currentSession?.id,
+          sessionId: currentSession?.id, // Use database ID for chat_messages table
           chatHistory: chatHistory
         }
       });
