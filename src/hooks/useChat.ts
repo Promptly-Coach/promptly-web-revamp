@@ -49,16 +49,27 @@ export const useChat = () => {
 
       setCurrentSession(data);
       
-      // Send welcome message
-      await sendMessage(
-        'Hello! Welcome to PromptlyCoach. I\'m your AI assistant and I\'m here to help answer any questions about our AI consulting and automation services. How can I assist you today?',
-        'bot',
-        'PromptlyCoach AI'
-      );
+      // Send welcome message after session is set
+      const { data: messageData, error: messageError } = await supabase
+        .from('chat_messages')
+        .insert({
+          session_id: data.id,
+          message: 'Hello! Welcome to PromptlyCoach. I\'m your AI assistant and I\'m here to help answer any questions about our AI consulting and automation services. How can I assist you today?',
+          sender_type: 'bot',
+          sender_name: 'PromptlyCoach AI',
+        })
+        .select()
+        .single();
+
+      if (messageError) {
+        console.error('Error sending welcome message:', messageError);
+      } else {
+        setMessages(prev => [...prev, messageData]);
+      }
 
       toast({
         title: "Chat Started",
-        description: "You're now connected to our support team.",
+        description: "You're now connected to our AI assistant.",
       });
 
       return { success: true, session: data };
