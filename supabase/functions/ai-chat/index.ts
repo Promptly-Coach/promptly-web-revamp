@@ -16,13 +16,17 @@ serve(async (req) => {
   }
 
   try {
+    console.log('AI Chat function called');
     const { message, sessionId, chatHistory = [] } = await req.json();
+    console.log('Request data:', { message, sessionId, chatHistoryLength: chatHistory.length });
 
     if (!message || !sessionId) {
+      console.error('Missing required fields:', { message: !!message, sessionId: !!sessionId });
       throw new Error('Message and session ID are required');
     }
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    console.log('OpenAI API key available:', !!openaiApiKey);
     if (!openaiApiKey) {
       throw new Error('OpenAI API key not configured');
     }
@@ -63,6 +67,7 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
       { role: 'user', content: message }
     ];
 
+    console.log('Calling OpenAI API...');
     // Call OpenAI
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -78,14 +83,19 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
       }),
     });
 
+    console.log('OpenAI API response status:', response.status);
+
     if (!response.ok) {
       const error = await response.text();
+      console.error('OpenAI API error response:', error);
       throw new Error(`OpenAI API error: ${error}`);
     }
 
     const data = await response.json();
+    console.log('OpenAI response received, choices length:', data.choices?.length);
     const aiResponse = data.choices[0].message.content;
 
+    console.log('Storing AI response in database...');
     // Store and return the AI response row
     const { data: savedMessage, error: insertError } = await supabase
       .from('chat_messages')
@@ -100,6 +110,8 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
 
     if (insertError) {
       console.error('Error storing AI response:', insertError);
+    } else {
+      console.log('AI response stored successfully, message ID:', savedMessage?.id);
     }
 
     return new Response(

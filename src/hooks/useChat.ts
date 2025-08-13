@@ -137,6 +137,8 @@ export const useChat = () => {
         content: msg.message
       }));
 
+      console.log('Calling AI chat function with:', { userMessage, sessionId: currentSession?.id, chatHistoryLength: chatHistory.length });
+      
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: {
           message: userMessage,
@@ -144,6 +146,8 @@ export const useChat = () => {
           chatHistory: chatHistory
         }
       });
+
+      console.log('AI function response:', { data, error });
 
       if (error) {
         console.error('Error getting AI response:', error);
