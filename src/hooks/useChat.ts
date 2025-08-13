@@ -163,9 +163,22 @@ export const useChat = () => {
           setMessages(prev => [...prev, fallbackData]);
         }
       } else if (data?.response) {
-        // AI response received successfully - it's already stored by the edge function
-        // The real-time subscription will pick it up automatically
-        console.log('AI response received:', data.response);
+        if (data.message) {
+          setMessages(prev => [...prev, data.message]);
+        } else {
+          // Fallback: append the AI response locally if realtime isn't configured
+          setMessages(prev => [
+            ...prev,
+            {
+              id: `temp_${Date.now()}`,
+              message: data.response,
+              sender_type: 'bot',
+              sender_name: 'PromptlyCoach AI',
+              created_at: new Date().toISOString(),
+              session_id: currentSession!.id,
+            } as ChatMessage,
+          ]);
+        }
       }
     } catch (error) {
       console.error('Error in getAIResponse:', error);

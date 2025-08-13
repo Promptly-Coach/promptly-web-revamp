@@ -71,7 +71,7 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: messages,
         temperature: 0.7,
         max_tokens: 500,
@@ -86,25 +86,26 @@ Keep responses helpful, concise, and focused on solving the customer's needs.`;
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    // Store the AI response in the database using the actual session ID (database ID)
-    const { error: insertError } = await supabase
+    // Store and return the AI response row
+    const { data: savedMessage, error: insertError } = await supabase
       .from('chat_messages')
       .insert({
-        session_id: sessionId, // This should be the database session ID
+        session_id: sessionId,
         message: aiResponse,
         sender_type: 'bot',
         sender_name: 'PromptlyCoach AI',
-      });
+      })
+      .select()
+      .single();
 
     if (insertError) {
       console.error('Error storing AI response:', insertError);
-    } else {
-      console.log('AI response stored successfully');
     }
 
     return new Response(
       JSON.stringify({ 
         response: aiResponse,
+        message: savedMessage,
         success: true 
       }),
       {
