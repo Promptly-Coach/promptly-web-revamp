@@ -106,7 +106,7 @@ const Contact = () => {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Contact Form */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2" id="consultation-form">
               <Card className="border-border/50 shadow-elegant bg-gradient-card">
                 <CardHeader>
                   <CardTitle className="text-2xl font-heading">Get Your Free Consultation</CardTitle>

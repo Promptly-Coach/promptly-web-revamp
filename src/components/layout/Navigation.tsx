@@ -4,13 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Brain, ChevronDown, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { useContact } from '@/hooks/useContact';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
   const location = useLocation();
-  const { scheduleConsultation } = useContact();
 
   useEffect(() => {
     // Get initial user
@@ -30,13 +28,6 @@ const Navigation = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-  };
-
-  const handleBookDemo = async () => {
-    const result = await scheduleConsultation('free_demo');
-    if (result.requiresAuth) {
-      window.location.href = '/auth';
-    }
   };
 
   const navItems = [
@@ -105,8 +96,8 @@ const Navigation = () => {
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/auth">Sign In</Link>
                 </Button>
-                <Button variant="hero" size="sm" onClick={handleBookDemo}>
-                  Book Demo
+                <Button variant="hero" size="sm" asChild>
+                  <Link to="/contact#consultation-form">Book Demo</Link>
                 </Button>
               </>
             )}
@@ -158,8 +149,8 @@ const Navigation = () => {
                     <Button variant="outline" size="sm" asChild>
                       <Link to="/auth" onClick={() => setIsOpen(false)}>Sign In</Link>
                     </Button>
-                    <Button variant="hero" size="sm" onClick={() => { handleBookDemo(); setIsOpen(false); }}>
-                      Book Demo
+                    <Button variant="hero" size="sm" asChild>
+                      <Link to="/contact#consultation-form" onClick={() => setIsOpen(false)}>Book Demo</Link>
                     </Button>
                   </>
                 )}
