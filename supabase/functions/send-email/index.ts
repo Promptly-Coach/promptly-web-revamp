@@ -1,11 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('Supabase environment variables are not set');
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,39 +21,33 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, text, html } = await req.json();
+    const { subject, text, html } = await req.json();
 
-    if (!RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY not set');
-    }
-
-    const emailRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'no-reply@promptlycoach.com',
-        to,
-        subject,
-        html: html || `<pre>${text}</pre>`
-      })
+    const { error } = await supabase.from('email_logs').insert({
+      email_to: 'info@promptlycoach.com',
+      email_from: 'no-reply@promptlycoach.com',
+      subject,
+      content: html || text,
+      email_type: 'inquiry_response',
+      status: 'sent'
     });
 
-    if (!emailRes.ok) {
-      const errorText = await emailRes.text();
-      throw new Error(errorText);
+    if (error) {
+      throw error;
     }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error sending email:', error);
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Error logging email:', error);
+    return new Response(
+      JSON.stringify({ success: false, error: (error as Error).message }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
+
