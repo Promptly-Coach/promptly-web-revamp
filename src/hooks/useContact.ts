@@ -20,10 +20,10 @@ export const useContact = () => {
 
   const submitContact = async (formData: ContactFormData) => {
     setIsSubmitting(true);
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const { error } = await supabase
         .from('contacts')
         .insert({
@@ -40,6 +40,14 @@ export const useContact = () => {
         });
 
       if (error) throw error;
+
+      await supabase.functions.invoke('send-email', {
+        body: {
+          to: 'info@promptlycoach.com',
+          subject: 'New Contact Form Submission',
+          text: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nCompany: ${formData.company}\nMessage: ${formData.message}`,
+        },
+      });
 
       toast({
         title: "Message Sent Successfully!",
@@ -63,25 +71,24 @@ export const useContact = () => {
   const scheduleConsultation = async (consultationType: 'free_demo' | 'strategy_session' = 'free_demo') => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Authentication Required",
-          description: "Please create an account to schedule a consultation.",
-          variant: "destructive",
-        });
-        return { success: false, requiresAuth: true };
-      }
 
       const { error } = await supabase
         .from('consultations')
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           consultation_type: consultationType,
           status: 'requested',
         });
 
       if (error) throw error;
+
+      await supabase.functions.invoke('send-email', {
+        body: {
+          to: 'info@promptlycoach.com',
+          subject: 'New Consultation Request',
+          text: `Type: ${consultationType}\nUser: ${user?.email || 'Guest'}`,
+        },
+      });
 
       toast({
         title: "Consultation Requested!",
