@@ -65,9 +65,9 @@ const Footer = () => {
             </p>
             <div className="flex gap-4">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                className="text-accent hover:text-accent-glow hover:bg-primary-foreground/10 rounded-full transition-transform hover:scale-110"
                 asChild
               >
                 <a
@@ -75,13 +75,13 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Twitter className="h-4 w-4" />
+                  <Twitter className="h-5 w-5" />
                 </a>
               </Button>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                className="text-accent hover:text-accent-glow hover:bg-primary-foreground/10 rounded-full transition-transform hover:scale-110"
                 asChild
               >
                 <a
@@ -89,13 +89,13 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Instagram className="h-4 w-4" />
+                  <Instagram className="h-5 w-5" />
                 </a>
               </Button>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                className="text-accent hover:text-accent-glow hover:bg-primary-foreground/10 rounded-full transition-transform hover:scale-110"
                 asChild
               >
                 <a
@@ -103,7 +103,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Youtube className="h-4 w-4" />
+                  <Youtube className="h-5 w-5" />
                 </a>
               </Button>
             </div>
