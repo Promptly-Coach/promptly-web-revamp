@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Brain, Mail, Phone, MapPin, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Brain, Mail, Phone, MapPin, Twitter, Instagram, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Footer = () => {
@@ -64,14 +64,47 @@ const Footer = () => {
               We train your prompts to behave and deliver exceptional results.
             </p>
             <div className="flex gap-4">
-              <Button variant="outline" size="icon" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
-                <Twitter className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                asChild
+              >
+                <a
+                  href="https://x.com/PromptlyCoach"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Twitter className="h-4 w-4" />
+                </a>
               </Button>
-              <Button variant="outline" size="icon" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
-                <Linkedin className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                asChild
+              >
+                <a
+                  href="https://www.instagram.com/promptlycoach/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
               </Button>
-              <Button variant="outline" size="icon" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
-                <Facebook className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-primary-foreground/20 hover:bg-primary-foreground/10"
+                asChild
+              >
+                <a
+                  href="https://www.youtube.com/@PromptlyCoach"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Youtube className="h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
